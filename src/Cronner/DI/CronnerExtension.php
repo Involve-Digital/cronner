@@ -8,14 +8,16 @@ use Nette\Configurator;
 use Nette\DI\Compiler;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
+use Nette\DI\Extensions\InjectExtension;
+use Nette\DI\Helpers;
 use Nette\DI\ServiceDefinition;
 use Nette\DI\Statement;
 use Nette\PhpGenerator\ClassType;
 use Nette\Utils\Json;
 use Nette\Utils\Validators;
-use Bileto\CriticalSection\CriticalSection;
-use Bileto\CriticalSection\Driver\FileDriver;
-use Bileto\CriticalSection\Driver\IDriver;
+use stekycz\CriticalSection\CriticalSection;
+use stekycz\CriticalSection\Driver\FileDriver;
+use stekycz\CriticalSection\Driver\IDriver;
 use stekycz\Cronner\Bar\Tasks;
 use stekycz\Cronner\Cronner;
 use stekycz\Cronner\ITimestampStorage;
@@ -45,7 +47,7 @@ class CronnerExtension extends CompilerExtension
 	{
 		$container = $this->getContainerBuilder();
 
-		$config = $this->getConfig($this->defaults);
+		$config = (array)$this->getConfig() + $this->defaults;
 		Validators::assert($config['timestampStorage'], 'string|object|null', 'Timestamp storage definition');
 		Validators::assert($config['maxExecutionTime'], 'integer|null', 'Script max execution time');
 		Validators::assert($config['criticalSectionTempDir'], 'string|null', 'Critical section files directory path (for critical section files driver only)');
@@ -74,14 +76,14 @@ class CronnerExtension extends CompilerExtension
 		);
 
 		$criticalSection = $container->addDefinition($this->prefix("criticalSection"))
-			 ->setClass(CriticalSection::class, [
+			 ->setFactory(CriticalSection::class, [
 			 	$criticalSectionDriver,
 			 ])
 			 ->setAutowired(FALSE)
-			 ->setInject(FALSE);
+			 ->addTag(InjectExtension::TAG_INJECT, false);
 
 		$runner = $container->addDefinition($this->prefix('runner'))
-			->setClass(Cronner::class, [
+			->setFactory(Cronner::class, [
 				$storage,
 				$criticalSection,
 				$config['maxExecutionTime'],
@@ -96,7 +98,7 @@ class CronnerExtension extends CompilerExtension
 			]);
 
 			if (class_exists($def->factory->entity)) {
-				$def->setClass($def->factory->entity);
+				$def->setFactory($def->factory->entity);
 			}
 
 			$def->setAutowired(FALSE);
@@ -106,7 +108,7 @@ class CronnerExtension extends CompilerExtension
 
 		if ($config['bar'] && class_exists('Tracy\Bar')) {
 			$container->addDefinition($this->prefix('bar'))
-				->setClass(Tasks::class, [
+				->setFactory(Tasks::class, [
 					$this->prefix('@runner'),
 					$this->prefix('@timestampStorage'),
 				]);
@@ -157,7 +159,7 @@ class CronnerExtension extends CompilerExtension
 				->setFactory($config);
 		} elseif ($config instanceof Statement) {
 			$definition = $container->addDefinition($serviceName)
-				->setClass($config->entity, $config->arguments);
+				->setFactory($config->entity, $config->arguments);
 		} else {
 			$foundServiceName = $container->getByType($fallbackType);
 			if ($foundServiceName) {
@@ -165,13 +167,13 @@ class CronnerExtension extends CompilerExtension
 					->setFactory('@' . $foundServiceName);
 			} else {
 				$definition = $container->addDefinition($serviceName)
-					->setClass($fallbackClass, $container->expand($fallbackArguments));
+					->setFactory($fallbackClass, Helpers::expand($fallbackArguments, $container->parameters));
 			}
 		}
 
 		return $definition
 			->setAutowired(FALSE)
-			->setInject(FALSE);
+			->addTag(InjectExtension::TAG_INJECT, false);
 	}
 
 }
