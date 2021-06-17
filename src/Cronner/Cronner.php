@@ -72,6 +72,8 @@ class Cronner
 	 */
 	private $skipFailedTask = TRUE;
 
+    private $cronLogService;
+
 	/**
 	 * @param ITimestampStorage $timestampStorage
 	 * @param ICriticalSection $criticalSection
@@ -146,6 +148,18 @@ class Cronner
 		return !is_null($this->maxExecutionTime) ? $this->maxExecutionTime : NULL;
 	}
 
+    /**
+     * Sets service responsible for creating cron logs.
+     *
+     * @return Cronner
+     */
+    public function addCronLogService($cronLogService)
+    {
+        $this->cronLogService = $cronLogService;
+
+        return $this;
+	}
+
 	/**
 	 * Adds task case to be processed when cronner runs. If tasks
 	 * with name which is already added are given then throws
@@ -195,9 +209,19 @@ class Cronner
 				$name = $task->getName();
 				if ($task->shouldBeRun($now)) {
 					if ($this->criticalSection->enter($name)) {
+					    if ($this->cronLogService) {
+					        $cronLogTitle = \Nette\Utils\Strings::webalize($name);
+					        $cronLog = $this->cronLogService->logStart($cronLogTitle);
+                        }
+
 						$this->onTaskBegin($this, $task);
 						$task($now);
 						$this->onTaskFinished($this, $task);
+
+                        if ($this->cronLogService) {
+                            $this->cronLogService->logEnd($cronLog);
+                        }
+
 						$this->criticalSection->leave($name);
 					}
 				}

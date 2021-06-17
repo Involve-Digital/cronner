@@ -41,7 +41,10 @@ class CronnerExtension extends CompilerExtension
 		'criticalSectionDriver' => NULL,
 		'tasks' => [],
 		'bar' => '%debugMode%',
+        'cronLogService' => NULL
 	];
+
+	private ?string $cronLogService = null;
 
 	public function loadConfiguration()
 	{
@@ -113,6 +116,8 @@ class CronnerExtension extends CompilerExtension
 					$this->prefix('@timestampStorage'),
 				]);
 		}
+
+		$this->cronLogService = $config['cronLogService'];
 	}
 
 	public function beforeCompile()
@@ -123,7 +128,23 @@ class CronnerExtension extends CompilerExtension
 		foreach (array_keys($builder->findByTag(self::TASKS_TAG)) as $serviceName) {
 			$runner->addSetup('addTasks', ['@' . $serviceName]);
 		}
-	}
+
+		if ($this->cronLogService) {
+		    if (!class_exists($this->cronLogService)) {
+		        throw new \Exception("Class \"{$this->cronLogService}\" for cron logs does not exist.");
+            }
+
+		    if (!method_exists($this->cronLogService, 'logStart')) {
+                throw new \Exception("Cron log service needs to have a \"logStart()\" method.");
+            }
+
+            if (!method_exists($this->cronLogService, 'logEnd')) {
+                throw new \Exception("Cron log service needs to have a \"logEnd()\" method.");
+            }
+
+            $runner->addSetup('addCronLogService', ['@' . $this->cronLogService]);
+        }
+    }
 
 	public function afterCompile(ClassType $class)
 	{
