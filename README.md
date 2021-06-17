@@ -87,6 +87,46 @@ class CronPresenter extends \Nette\Application\UI\Presenter {
 
  or in `Command` from [Kdyby/Console](https://github.com/Kdyby/Console).
 
+Another thing you can configure are cron logs. If you specify a service, that has methods
+>- logStart(string $title)
+>-  logEnd($cronLog)
+
+that contain logic of logging itself, every run task will be automatically logged.
+
+```neon
+cronner:
+    cronLogService: App\Model\Service\CronLogService
+```
+
+and CronLogService could look like this
+
+```php
+final class CronLogService extends BaseService
+{
+
+    //////////////////////////////////////////////////////// Public
+
+    public function logStart(string $title): CronLog
+    {
+        $cronLog = new CronLog;
+        $cronLog->setName($title);
+
+        return parent::save($cronLog);
+    }
+
+    public function logEnd(CronLog $cronLog): CronLog
+    {
+        $currentTimeStamp = (new DateTime)->getTimestamp();
+        $cronLogTimeStamp = $cronLog->getDateCreated()->getTimestamp();
+
+        $cronLog->setDurationInSeconds($currentTimeStamp - $cronLogTimeStamp);
+
+        return parent::save($cronLog);
+    }
+
+}
+```
+
 Service configuration is also possible but it **should not** be used using new versions of Nette because extension
 usage is recommended and preferable way. However you will still need to call `run` method somewhere in your
 `Presenter` or console `Command`.
