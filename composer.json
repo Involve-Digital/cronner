@@ -1,5 +1,5 @@
 {
-	"name": "bileto/cronner",
+	"name": "involve-digital/cronner",
 	"type": "nette-addon",
 	"description": "Simple tool which helps with maintenance of cron tasks.",
 	"keywords": ["nette", "cron", "manager", "task"],
