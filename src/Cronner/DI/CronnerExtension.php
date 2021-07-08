@@ -41,6 +41,7 @@ class CronnerExtension extends CompilerExtension
 		'criticalSectionDriver' => NULL,
 		'tasks' => [],
 		'bar' => '%debugMode%',
+		'throwJobExceptions' => FALSE,
         'cronLogService' => NULL
 	];
 
@@ -55,6 +56,8 @@ class CronnerExtension extends CompilerExtension
 		Validators::assert($config['maxExecutionTime'], 'integer|null', 'Script max execution time');
 		Validators::assert($config['criticalSectionTempDir'], 'string|null', 'Critical section files directory path (for critical section files driver only)');
 		Validators::assert($config['criticalSectionDriver'], 'string|object|null', 'Critical section driver definition');
+		Validators::assert($config['throwJobExceptions'], 'bool', 'Should exceptions be thrown or not? (cron stuck by exception failsafe mechanism)');
+		Validators::assert($config['cronLogService'], 'string|null', 'Service used for logging each cron job');
 
 		$storage = $this->createServiceByConfig(
 			$container,
@@ -90,7 +93,7 @@ class CronnerExtension extends CompilerExtension
 				$storage,
 				$criticalSection,
 				$config['maxExecutionTime'],
-				array_key_exists('debugMode', $config) ? !$config['debugMode'] : TRUE,
+				!$config['throwJobExceptions'],
 			]);
 
 		Validators::assert($config['tasks'], 'array');
