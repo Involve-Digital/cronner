@@ -16,12 +16,13 @@ use stekycz\Cronner\Exceptions\InvalidArgumentException;
 use stekycz\Cronner\Exceptions\RuntimeException;
 use stekycz\Cronner\Tasks\Parameters;
 use stekycz\Cronner\Tasks\Task;
+use Throwable;
 use Tracy\Debugger;
 
 /**
  * @method void onTaskBegin(Cronner $cronner, Task $task)
  * @method void onTaskFinished(Cronner $cronner, Task $task)
- * @method void onTaskError(Cronner $cronner, Exception $exception, Task $task)
+ * @method void onTaskError(Cronner $cronner, Throwable $exception, Task $task)
  */
 class Cronner
 {
@@ -225,7 +226,7 @@ class Cronner
 						$this->criticalSection->leave($name);
 					}
 				}
-			} catch (Exception $e) {
+			} catch (Throwable $e) {
 				$this->onTaskError($this, $e, $task);
 				$name = $task->getName();
 				if ($this->criticalSection->isEntered($name)) {
