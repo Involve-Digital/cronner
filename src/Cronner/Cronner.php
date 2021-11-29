@@ -92,7 +92,7 @@ class Cronner
 		$this->criticalSection = $criticalSection;
 		$this->setMaxExecutionTime($maxExecutionTime);
 		$this->setSkipFailedTask($skipFailedTask);
-		$this->onTaskError[] = function (Cronner $cronner, Exception $exception) {
+		$this->onTaskError[] = function (Cronner $cronner, Throwable $exception) {
 			Debugger::log($exception, Debugger::ERROR);
 		};
 	}
