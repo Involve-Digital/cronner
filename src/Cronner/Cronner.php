@@ -22,7 +22,7 @@ use Tracy\Debugger;
 /**
  * @method void onTaskBegin(Cronner $cronner, Task $task)
  * @method void onTaskFinished(Cronner $cronner, Task $task)
- * @method void onTaskError(Cronner $cronner, Exception $exception, Task $task)
+ * @method void onTaskError(Cronner $cronner, Throwable $exception, Task $task)
  */
 class Cronner
 {
@@ -90,7 +90,7 @@ class Cronner
 		$this->criticalSection = $criticalSection;
 		$this->setMaxExecutionTime($maxExecutionTime);
 		$this->setSkipFailedTask($skipFailedTask);
-		$this->onTaskError[] = function (Cronner $cronner, Exception $exception) {
+		$this->onTaskError[] = function (Cronner $cronner, Throwable $exception) {
 			Debugger::log($exception, Debugger::ERROR);
 		};
 	}
