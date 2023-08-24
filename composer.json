@@ -27,7 +27,7 @@
 		"nette/di": "^3.0",
 		"nette/bootstrap": "^3.0",
 		"nette/utils": "^3.0",
-		"nette/reflection": "^2.4",
+		"involve-digital/reflection": "dev-php-8",
 		"nette/safe-stream": "^2.3",
 		"bileto/critical-section": "^2.1"
 	},
@@ -35,8 +35,14 @@
 		"nette/tester": "^1.7",
 		"jakub-onderka/php-parallel-lint": "^0.9",
 		"mockery/mockery": "^0.9",
-		"phpstan/phpstan": "^0.8"
+		"phpstan/phpstan": "^1.10"
 	},
+	"repositories": [
+		{
+			"type": "github",
+			"url": "git@github.com:involve-digital/reflection.git"
+		}
+	],
 	"suggest": {
 	},
 	"replace": {
