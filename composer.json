@@ -23,7 +23,7 @@
 	},
 	"require": {
 		"php": ">=8.0",
-		"tracy/tracy": "^2.8",
+		"tracy/tracy": "^2.4",
 		"nette/di": "^3.0",
 		"nette/bootstrap": "^3.0",
 		"nette/utils": "^3.0",
