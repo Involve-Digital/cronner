@@ -26,7 +26,7 @@
 		"tracy/tracy": "^2.4",
 		"nette/di": "^3.0",
 		"nette/bootstrap": "^3.0",
-		"nette/utils": "^3.0",
+		"nette/utils": "^3.0 || ^4.0",
 		"involve-digital/reflection": "dev-php-8",
 		"nette/safe-stream": "^2.3",
 		"bileto/critical-section": "^2.1"
