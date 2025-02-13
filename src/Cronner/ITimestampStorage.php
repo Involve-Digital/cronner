@@ -14,7 +14,7 @@ interface ITimestampStorage
 	 *
 	 * @param string|null $taskName
 	 */
-	public function setTaskName(string $taskName = NULL);
+	public function setTaskName(?string $taskName = NULL);
 
 	/**
 	 * Saves current date and time as last invocation time.

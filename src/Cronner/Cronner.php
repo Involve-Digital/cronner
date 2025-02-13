@@ -27,7 +27,7 @@ use Tracy\Debugger;
 class Cronner
 {
 	use \Nette\SmartObject;
-  
+
 	/**
 	 * @var callable[]
 	 */
@@ -84,7 +84,7 @@ class Cronner
 	public function __construct(
 		ITimestampStorage $timestampStorage,
 		ICriticalSection $criticalSection,
-		int $maxExecutionTime = NULL,
+        ?int $maxExecutionTime = NULL,
 		bool $skipFailedTask = TRUE
 	)
 	{
@@ -119,7 +119,7 @@ class Cronner
 	 * @return Cronner
 	 * @throws InvalidArgumentException
 	 */
-	public function setMaxExecutionTime(int $maxExecutionTime = NULL) : self
+	public function setMaxExecutionTime(?int $maxExecutionTime = NULL) : self
 	{
 		if ($maxExecutionTime !== NULL && $maxExecutionTime <= 0) {
 			throw new InvalidArgumentException("Max execution time must be NULL or non negative number.");
@@ -196,7 +196,7 @@ class Cronner
 	/**
 	 * Runs all cron tasks.
 	 */
-	public function run(DateTimeInterface $now = NULL)
+	public function run(?DateTimeInterface $now = NULL)
 	{
 		if ($now === NULL) {
 			$now = new DateTime();

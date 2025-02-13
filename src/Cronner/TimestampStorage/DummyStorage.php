@@ -16,7 +16,7 @@ class DummyStorage implements ITimestampStorage
 	 *
 	 * @param string|null $taskName
 	 */
-	public function setTaskName(string $taskName = NULL)
+	public function setTaskName(?string $taskName = NULL)
 	{
 		// Dummy
 	}
